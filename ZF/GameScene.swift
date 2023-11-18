@@ -7,11 +7,22 @@
 
 import SpriteKit
 import GameplayKit
+import AVFoundation
+
+protocol GameDelegate {
+    func gameDidEndSuccess(gamescene: GameScene)
+    func gameDidEndFailed(gamescene: GameScene)
+    func gameDidBegin(gamescene: GameScene)
+    func setCurrentLevel(currentLevel: String)
+    func showFeedbackScreen()
+}
 
 class GameScene: SKScene {
     
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
+    
+    var audioPlayer: AVAudioPlayer?
     
     override func didMove(to view: SKView) {
         
