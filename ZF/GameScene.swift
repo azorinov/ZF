@@ -12,9 +12,6 @@ import AVFoundation
 protocol GameDelegate {
     func gameDidEndSuccess(gamescene: GameScene)
     func gameDidEndFailed(gamescene: GameScene)
-    func gameDidBegin(gamescene: GameScene)
-    func setCurrentLevel(currentLevel: String)
-    func showFeedbackScreen()
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
@@ -27,10 +24,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let stone2Category:UInt32 = 0x1 << 2                // 000000100
     let stone3Category:UInt32 = 0x1 << 3                // 000001000
     
-    var audioPlayer: AVAudioPlayer?
-    
-    var timer = Timer()
-    var timerHand = Timer()
+    //var timer = Timer()
     var timerSuccess = Timer()
     
     var delegateGame:GameDelegate?
@@ -53,8 +47,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var stone3Size = CGSizeMake(60.0, 43.0)
     var sprite3 = SKSpriteNode()
     
-    var spriteBackground = SKSpriteNode(imageNamed: "backgroundZen1")
-    
     override init(size: CGSize) {
         super.init(size: size)
         anchorPoint = CGPoint(x: 0, y: 1.0)
@@ -65,7 +57,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.gravity = CGVectorMake(0, -3)
         self.physicsWorld.contactDelegate = self
         
-        print("init...")
+        self.backgroundColor = .white
+        
         initilizationSprites()
     }
     
@@ -146,13 +139,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /*** ANIMATION  */
     func startGame() {
-        print("startGame...")
         clearAll()
-        
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: self.frame)
-        
         initilizationSprites()
-        
         self.physicsWorld.gravity = CGVectorMake(0, -3)
         dropFirstStone()
     }
@@ -163,6 +152,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         sprite2.physicsBody = SKPhysicsBody(rectangleOf: sprite2.size)
         sprite2.physicsBody?.affectedByGravity = true
         sprite2.physicsBody?.isDynamic = true
+    }
+    
+    func dropSecondStone() {
+        sprite3.isHidden = false
+        sprite3.physicsBody?.isDynamic = true
+        sprite3.physicsBody?.affectedByGravity = true
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -190,6 +185,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         } else if contactCounter > 1 && sprite3.position.y < (sprite2.position.y - 20) {
             endFailedGame()
             return
+        }
+        
+        if contactCounter > 1 && sprite3.position.y > sprite2.position.y {
+            endGameSuccessfully()
         }
     }
     
@@ -261,9 +260,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     let joint = SKPhysicsJointFixed.joint(withBodyA: contact.bodyA, bodyB: contact.bodyB, anchor: sprite1.position)
                     self.physicsWorld.add(joint)
                     
-                    sprite3.isHidden = false
-                    sprite3.physicsBody?.isDynamic = true
-                    sprite3.physicsBody?.affectedByGravity = true
+                    dropSecondStone()
                 }
             }
             if contactCounter == 1 {
@@ -276,15 +273,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
             contactCounter += 1
-            
         }
+    }
+    
+    /*** SUCCESS  */
+    func endGameSuccessfully() {
+        playSoundUnlockedLevel()
+        gamePlaying = false
+        startSuccessPaticle()
+    }
+    
+    func startSuccessPaticle() {
+        timerSuccess = Timer.scheduledTimer(timeInterval: 7.0, target: self, selector: #selector(stopSuccessPaticle), userInfo: nil, repeats: false)
+        let emitter = SKEmitterNode(fileNamed: "SuccessParticle.sks")
+        emitter?.particlePosition = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
+        emitter?.zPosition = CGPoint(x: 0, y: 0).x
+        emitter?.particleSize = CGSizeMake(30.0, 30.0)
+        emitter?.particleColor = ImageUtil().getSuccessColor()
+        emitter?.name = "Success"
+        self.addChild(emitter!)
+    }
+    
+    @objc func stopSuccessPaticle() {
+        if let fire = self.childNode(withName: "Success") {
+            fire.removeFromParent()
+        }
+        delegateGame?.gameDidEndSuccess(gamescene: self)
     }
     
     /*** FAILURE  */
     func endFailedGame() {
-        //playSoundFailure()
+        playSoundFailure()
         gamePlaying = false
-        delegateGame?.gameDidEndFailed(gamescene: self)
         
         let action = SKAction.rotate(byAngle: CGFloat(Double.pi), duration:5)
         if contactCounter == 0 {
@@ -326,6 +346,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             sprite3.removeFromParent()
             sprite2.removeFromParent()
         }
+        delegateGame?.gameDidEndFailed(gamescene: self)
     }
     
     func touchDown(atPoint pos : CGPoint) {
@@ -354,6 +375,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         
+    }
+    
+    func playSoundUnlockedLevel() {
+        run(SKAction.playSoundFileNamed("zen2.m4a", waitForCompletion: false))
+    }
+    
+    func playSoundFailure() {
+        run(SKAction.playSoundFileNamed("shimmer.m4a", waitForCompletion: false))
     }
     
     func clearAll() {

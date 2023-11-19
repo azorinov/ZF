@@ -16,34 +16,20 @@ class GameViewController: UIViewController, GameDelegate {
     
     @IBAction func startGame(_ sender: Any) {
         startButton.isHidden = true
-        // Configure the view.
         let skView = view as! SKView
         skView.isMultipleTouchEnabled = false
-        
-        //clearGame(sender: scene)
-        
-        // Create and configure the scene.
+    
         scene = GameScene(size: skView.bounds.size)
         scene.delegateGame = self
         scene.scaleMode = .aspectFill
-        
-        // Present the scene.
+    
         skView.presentScene(scene)
         
         scene.startGame()
-        
     }
     
     @IBAction func clearGame(sender: AnyObject) {
         scene = nil
-    }
-    
-    func setCurrentLevel(currentLevel: String) {
-        
-    }
-    
-    func showFeedbackScreen() {
-        
     }
     
     func gameDidEndSuccess(gamescene: GameScene) {
@@ -54,25 +40,16 @@ class GameViewController: UIViewController, GameDelegate {
         startButton.isHidden = false
     }
     
-    func gameDidBegin(gamescene: GameScene) {
-        startButton.isHidden = true
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         startButton.isHidden = false
         if let view = self.view as! SKView? {
-            // Load the SKScene from 'GameScene.sks'
             if let scene = SKScene(fileNamed: "GameScene") {
-                // Set the scale mode to scale to fit the window
                 scene.scaleMode = .aspectFill
-                
-                // Present the scene
                 view.presentScene(scene)
             }
-            
             view.ignoresSiblingOrder = true
-            
             view.showsFPS = true
             view.showsNodeCount = true
         }

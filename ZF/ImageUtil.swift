@@ -68,24 +68,6 @@ class ImageUtil {
         defaults.set(counter, forKey: "gameLaunchCounter")
     }
     
-    func getBackground() -> String {
-        
-        //if UIScreen.main.nativeBounds.height == 960 {
-            return "background5"
-//        } else if UIScreen.main.nativeBounds.height == 1136 {
-//            return "background5"
-//        } else if UIScreen.main.nativeBounds.height == 1334 {
-//            return "background6"
-//        } else if UIScreen.main.nativeBounds.height == 2208 {
-//            return "background6plus"
-//        }
-//        return "background6plus"
-    }
-    
-    func getBackgroundZen1() -> String {
-        return  "backgroundZen1"
-    }
-    
     func randomBetweenNumbers() -> CGFloat{
         var firstNum = 20.0
         var secondNum = 300.0
