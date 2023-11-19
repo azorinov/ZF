@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1100A1302B02388F003C0619 /* zen3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 1100A12F2B02388F003C0619 /* zen3.m4a */; };
+		1100A1302B02388F003C0619 /* zen2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 1100A12F2B02388F003C0619 /* zen2.m4a */; };
 		1100A1322B0238FA003C0619 /* zen1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 1100A1312B0238FA003C0619 /* zen1.m4a */; };
 		1100A1342B02392C003C0619 /* shimmer.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 1100A1332B02392C003C0619 /* shimmer.m4a */; };
 		11E7F5292B0166AE005BB671 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E7F5282B0166AE005BB671 /* AppDelegate.swift */; };
@@ -21,6 +21,7 @@
 		11E7F54F2B0166B0005BB671 /* ZFUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E7F54E2B0166B0005BB671 /* ZFUITestsLaunchTests.swift */; };
 		11FE88852B0914BF00FC8CCF /* FailureParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 11FE88822B0914BF00FC8CCF /* FailureParticle.sks */; };
 		11FE88862B0914BF00FC8CCF /* SuccessParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 11FE88832B0914BF00FC8CCF /* SuccessParticle.sks */; };
+		11FE88882B091B9700FC8CCF /* ImageUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11FE88872B091B9700FC8CCF /* ImageUtil.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,7 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1100A12F2B02388F003C0619 /* zen3.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = zen3.m4a; path = "../../Zen Fringe/Zen Fringe/zen3.m4a"; sourceTree = "<group>"; };
+		1100A12F2B02388F003C0619 /* zen2.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = zen2.m4a; path = "../../Zen Fringe/Zen Fringe/zen2.m4a"; sourceTree = "<group>"; };
 		1100A1312B0238FA003C0619 /* zen1.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = zen1.m4a; path = "../../Zen Fringe/Zen Fringe/zen1.m4a"; sourceTree = "<group>"; };
 		1100A1332B02392C003C0619 /* shimmer.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = shimmer.m4a; path = "../../Zen Fringe/Zen Fringe/shimmer.m4a"; sourceTree = "<group>"; };
 		11E7F5252B0166AE005BB671 /* ZF.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZF.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -58,6 +59,7 @@
 		11E7F54E2B0166B0005BB671 /* ZFUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZFUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		11FE88822B0914BF00FC8CCF /* FailureParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = FailureParticle.sks; sourceTree = "<group>"; };
 		11FE88832B0914BF00FC8CCF /* SuccessParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SuccessParticle.sks; sourceTree = "<group>"; };
+		11FE88872B091B9700FC8CCF /* ImageUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageUtil.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,10 +114,11 @@
 				11FE88832B0914BF00FC8CCF /* SuccessParticle.sks */,
 				1100A1332B02392C003C0619 /* shimmer.m4a */,
 				1100A1312B0238FA003C0619 /* zen1.m4a */,
-				1100A12F2B02388F003C0619 /* zen3.m4a */,
+				1100A12F2B02388F003C0619 /* zen2.m4a */,
 				11E7F5282B0166AE005BB671 /* AppDelegate.swift */,
 				11E7F52E2B0166AE005BB671 /* GameScene.swift */,
 				11E7F5302B0166AE005BB671 /* GameViewController.swift */,
+				11FE88872B091B9700FC8CCF /* ImageUtil.swift */,
 				11E7F5322B0166AE005BB671 /* Main.storyboard */,
 				11E7F5352B0166AF005BB671 /* Assets.xcassets */,
 				11E7F5372B0166AF005BB671 /* LaunchScreen.storyboard */,
@@ -251,7 +254,7 @@
 				11FE88862B0914BF00FC8CCF /* SuccessParticle.sks in Resources */,
 				11E7F5392B0166AF005BB671 /* LaunchScreen.storyboard in Resources */,
 				11FE88852B0914BF00FC8CCF /* FailureParticle.sks in Resources */,
-				1100A1302B02388F003C0619 /* zen3.m4a in Resources */,
+				1100A1302B02388F003C0619 /* zen2.m4a in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,6 +282,7 @@
 				11E7F52F2B0166AE005BB671 /* GameScene.swift in Sources */,
 				11E7F5312B0166AE005BB671 /* GameViewController.swift in Sources */,
 				11E7F5292B0166AE005BB671 /* AppDelegate.swift in Sources */,
+				11FE88882B091B9700FC8CCF /* ImageUtil.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,6 +15,22 @@ class GameViewController: UIViewController, GameDelegate {
     @IBOutlet weak var startButton: UIButton!
     
     @IBAction func startGame(_ sender: Any) {
+        startButton.isHidden = true
+        // Configure the view.
+        let skView = view as! SKView
+        skView.isMultipleTouchEnabled = false
+        
+        //clearGame(sender: scene)
+        
+        // Create and configure the scene.
+        scene = GameScene(size: skView.bounds.size)
+        scene.delegateGame = self
+        scene.scaleMode = .aspectFill
+        
+        // Present the scene.
+        skView.presentScene(scene)
+        
+        scene.startGame()
         
     }
     
