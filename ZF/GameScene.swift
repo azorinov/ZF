@@ -25,8 +25,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let stone2Category:UInt32 = 0x1 << 2                // 000000100
     let stone3Category:UInt32 = 0x1 << 3                // 000001000
     
-    //var timer = Timer()
-    var timerSuccess = Timer()
+    var timerSuccessFailure = Timer()
     
     var delegateGame:GameDelegate?
     var contactCounter:Int = 0
@@ -105,7 +104,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func initilizationSprite2() {
-        stone2Position.x = ImageUtil().randomBetweenNumbers()
+        stone2Position.x = randomBetweenNumbers()
         stone2Position.y = -sprite2.size.height - sprite3.size.height
         sprite2.name = stone2CategoryName
         sprite2.size = stone2Size
@@ -121,7 +120,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func initilizationSprite3() {
-        stone3Position.x = ImageUtil().randomBetweenNumbers()
+        stone3Position.x = randomBetweenNumbers()
         stone3Position.y = -sprite3.size.height
         
         sprite3.size = stone3Size
@@ -149,7 +148,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func dropFirstStone() {
         sprite2.isHidden = false
-        sprite2.position.x = ImageUtil().randomBetweenNumbers()
+        sprite2.position.x = randomBetweenNumbers()
         sprite2.physicsBody = SKPhysicsBody(rectangleOf: sprite2.size)
         sprite2.physicsBody?.affectedByGravity = true
         sprite2.physicsBody?.isDynamic = true
@@ -227,12 +226,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startSuccessPaticle() {
-        timerSuccess = Timer.scheduledTimer(timeInterval: 7.0, target: self, selector: #selector(stopSuccessPaticle), userInfo: nil, repeats: false)
+        timerSuccessFailure = Timer.scheduledTimer(timeInterval: 7.0, target: self, selector: #selector(stopSuccessPaticle), userInfo: nil, repeats: false)
         let emitter = SKEmitterNode(fileNamed: "SuccessParticle.sks")
         emitter?.particlePosition = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
         emitter?.zPosition = CGPoint(x: 0, y: 0).x
         emitter?.particleSize = CGSizeMake(30.0, 30.0)
-        emitter?.particleColor = ImageUtil().getSuccessColor()
+        emitter?.particleColor = Theme.redSuccess
         emitter?.name = "Success"
         self.addChild(emitter!)
     }
@@ -262,7 +261,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startFailurePaticleStone2() {
-        timerSuccess = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(stopFailurePaticle), userInfo: nil, repeats: false)
+        timerSuccessFailure = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(stopFailurePaticle), userInfo: nil, repeats: false)
         let emitter = SKEmitterNode(fileNamed: "FailureParticle.sks")
         emitter?.particlePosition = CGPoint(x: sprite2.position.x - 10, y: sprite2.position.y - 20)
         emitter?.zPosition = CGPoint(x: 0, y: 0).x
@@ -273,7 +272,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startFailurePaticleStone3() {
-        timerSuccess = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(stopFailurePaticle), userInfo: nil, repeats: false)
+        timerSuccessFailure = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(stopFailurePaticle), userInfo: nil, repeats: false)
         let emitter = SKEmitterNode(fileNamed: "FailureParticle.sks")
         emitter?.particlePosition = CGPoint(x: sprite3.position.x - 11, y: sprite3.position.y - 8)
         emitter?.zPosition = CGPoint(x: 0, y: 0).x
@@ -411,5 +410,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func randomBetweenNumbers() -> CGFloat{
+        var firstNum = 20.0
+        var secondNum = 300.0
+        
+        if UIScreen.main.nativeBounds.height == 1334 {
+            firstNum = 20.0
+            secondNum = 355.0
+        } else if UIScreen.main.nativeBounds.height == 2208 {
+            firstNum = 20.0
+            secondNum = 386.0
+        }
+        
+        return CGFloat(arc4random()) / CGFloat(UINT32_MAX) * abs(firstNum - secondNum) + min(firstNum, secondNum)
     }
 }
