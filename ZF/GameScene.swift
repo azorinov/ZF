@@ -57,7 +57,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.gravity = CGVectorMake(0, -3)
         self.physicsWorld.contactDelegate = self
         
-        self.backgroundColor = .white
+        self.backgroundColor = Theme.normalBackground
         
         initilizationSprites()
     }
@@ -378,7 +378,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func playSoundUnlockedLevel() {
-        run(SKAction.playSoundFileNamed("zen2.m4a", waitForCompletion: false))
+        run(SKAction.playSoundFileNamed("zen.m4a", waitForCompletion: false))
     }
     
     func playSoundFailure() {

@@ -10,19 +10,8 @@ import UIKit
 
 struct Theme {
     static let normalBackground = UIColor.white
-    
-    // Stones
     static let redStone     = UIColor(red:255/255, green:0/255, blue:0/255, alpha:1.0).cgColor
-    static let yellowStone  = UIColor(red:245/255, green:251/255, blue:5/255, alpha:1.0).cgColor
-    static let blueStone    = UIColor(red:0/255, green:139/255, blue:217/255, alpha:1.0).cgColor
-    
-    // Success
     static let redSuccess    = UIColor(red:250/255, green:55/255, blue:100/255, alpha:1.0)
-    static let blueSuccess   = UIColor(red:109/255, green:193/255, blue:255/255, alpha:1.0)
-    static let yellowSuccess = UIColor(red:237/255, green:234/255, blue:31/255, alpha:1.0)
-    
-    //Feedback
-    static let greenFeedback = UIColor(red:118/255, green:255/255, blue:122/255, alpha:1.0)
 }
 
 class ImageUtil {
