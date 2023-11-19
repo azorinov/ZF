@@ -15,6 +15,7 @@ protocol GameDelegate {
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    var fingerIsOnPaddle = false
     let stone1CategoryName = "stone1"
     let stone2CategoryName = "stone2"
     let stone3CategoryName = "stone3"
@@ -192,6 +193,152 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func didEnd(_ contact: SKPhysicsContact) {
+        if gamePlaying {
+            if contactCounter == 0 {
+                if contact.bodyB.node?.name == stone1CategoryName {
+                    adjustPositionForStoneOneAndTwo()
+                    sprite2.position.y = sprite1.position.y + 50
+                    
+                    let joint = SKPhysicsJointFixed.joint(withBodyA: contact.bodyA, bodyB: contact.bodyB, anchor: sprite1.position)
+                    self.physicsWorld.add(joint)
+                    
+                    dropSecondStone()
+                }
+            }
+            if contactCounter == 1 {
+                if contact.bodyA.node?.name == stone2CategoryName {
+                    adjustPositionForStonesTwoAndThree()
+                    sprite3.position.y = sprite2.position.y + 40
+                    
+                    let joint = SKPhysicsJointFixed.joint(withBodyA: contact.bodyA, bodyB: contact.bodyB, anchor: sprite1.position)
+                    self.physicsWorld.add(joint)
+                }
+            }
+            contactCounter += 1
+        }
+    }
+    
+    /// SUCCESS  
+    func endGameSuccessfully() {
+        playSoundUnlockedLevel()
+        gamePlaying = false
+        startSuccessPaticle()
+    }
+    
+    func startSuccessPaticle() {
+        timerSuccess = Timer.scheduledTimer(timeInterval: 7.0, target: self, selector: #selector(stopSuccessPaticle), userInfo: nil, repeats: false)
+        let emitter = SKEmitterNode(fileNamed: "SuccessParticle.sks")
+        emitter?.particlePosition = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
+        emitter?.zPosition = CGPoint(x: 0, y: 0).x
+        emitter?.particleSize = CGSizeMake(30.0, 30.0)
+        emitter?.particleColor = ImageUtil().getSuccessColor()
+        emitter?.name = "Success"
+        self.addChild(emitter!)
+    }
+    
+    @objc func stopSuccessPaticle() {
+        if let fire = self.childNode(withName: "Success") {
+            fire.removeFromParent()
+        }
+        delegateGame?.gameDidEndSuccess(gamescene: self)
+    }
+    
+    ///  FAILURE
+    func endFailedGame() {
+        playSoundFailure()
+        gamePlaying = false
+        
+        let action = SKAction.rotate(byAngle: CGFloat(Double.pi), duration:5)
+        if contactCounter == 0 {
+            sprite2.run(SKAction.repeatForever(action))
+            sprite2.run(SKAction.resize(toWidth: 0, duration: 5))
+            startFailurePaticleStone2()
+        } else if contactCounter == 1 {
+            sprite3.run(SKAction.repeatForever(action))
+            sprite3.run(SKAction.resize(toWidth: 0, duration: 5))
+            startFailurePaticleStone3()
+        }
+    }
+    
+    func startFailurePaticleStone2() {
+        timerSuccess = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(stopFailurePaticle), userInfo: nil, repeats: false)
+        let emitter = SKEmitterNode(fileNamed: "FailureParticle.sks")
+        emitter?.particlePosition = CGPoint(x: sprite2.position.x - 10, y: sprite2.position.y - 20)
+        emitter?.zPosition = CGPoint(x: 0, y: 0).x
+        emitter?.particleSize = CGSizeMake(30.0, 30.0)
+        emitter?.particleColor = UIColor.lightGray
+        emitter?.name = "Failure"
+        self.addChild(emitter!)
+    }
+    
+    func startFailurePaticleStone3() {
+        timerSuccess = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(stopFailurePaticle), userInfo: nil, repeats: false)
+        let emitter = SKEmitterNode(fileNamed: "FailureParticle.sks")
+        emitter?.particlePosition = CGPoint(x: sprite3.position.x - 11, y: sprite3.position.y - 8)
+        emitter?.zPosition = CGPoint(x: 0, y: 0).x
+        emitter?.particleSize = CGSizeMake(30.0, 30.0)
+        emitter?.particleColor = UIColor.lightGray
+        emitter?.name = "Failure"
+        self.addChild(emitter!)
+    }
+    
+    @objc func stopFailurePaticle() {
+        if let smoke = self.childNode(withName: "Failure") {
+            smoke.removeFromParent()
+            sprite3.removeFromParent()
+            sprite2.removeFromParent()
+        }
+        delegateGame?.gameDidEndFailed(gamescene: self)
+    }
+    
+    /// TOUCHES
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let touchLocation = touch.location(in: self)
+
+            let _:SKPhysicsBody? = self.physicsWorld.body(at: touchLocation)
+
+            for nodeObject in nodes(at: touchLocation) {
+                let node = nodeObject
+                if node.name == stone1CategoryName {
+                    fingerIsOnPaddle = true
+                }
+            }
+        }
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if fingerIsOnPaddle && gamePlaying{
+            if let touch = touches.first {
+                let touchLoc = touch.location(in: self)
+                let prevTouchLoc = touch.previousLocation(in: self)
+
+                let paddle = self.childNode(withName: stone1CategoryName) as! SKSpriteNode
+
+                var newXPos = paddle.position.x + (touchLoc.x - prevTouchLoc.x)
+
+                newXPos = max(newXPos, paddle.size.width / 2)
+                newXPos = min(newXPos, self.size.width - paddle.size.width / 2)
+
+                paddle.position = CGPointMake(newXPos, paddle.position.y)
+            }
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        fingerIsOnPaddle = false
+    }
+    /// TOUCHES END
+    
+    func playSoundUnlockedLevel() {
+        run(SKAction.playSoundFileNamed("zen.m4a", waitForCompletion: false))
+    }
+    
+    func playSoundFailure() {
+        run(SKAction.playSoundFileNamed("shimmer.m4a", waitForCompletion: false))
+    }
+    
     func adjustPositionForStoneOneAndTwo() {
         let range = sprite1.position.x - sprite2.position.x
         if range > 0 && range > 35 {
@@ -250,141 +397,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func didEnd(_ contact: SKPhysicsContact) {
-        if gamePlaying {
-            if contactCounter == 0 {
-                if contact.bodyB.node?.name == stone1CategoryName {
-                    adjustPositionForStoneOneAndTwo()
-                    sprite2.position.y = sprite1.position.y + 50
-                    
-                    let joint = SKPhysicsJointFixed.joint(withBodyA: contact.bodyA, bodyB: contact.bodyB, anchor: sprite1.position)
-                    self.physicsWorld.add(joint)
-                    
-                    dropSecondStone()
-                }
-            }
-            if contactCounter == 1 {
-                if contact.bodyA.node?.name == stone2CategoryName {
-                    adjustPositionForStonesTwoAndThree()
-                    sprite3.position.y = sprite2.position.y + 40
-                    
-                    let joint = SKPhysicsJointFixed.joint(withBodyA: contact.bodyA, bodyB: contact.bodyB, anchor: sprite1.position)
-                    self.physicsWorld.add(joint)
-                }
-            }
-            contactCounter += 1
-        }
-    }
-    
-    /*** SUCCESS  */
-    func endGameSuccessfully() {
-        playSoundUnlockedLevel()
-        gamePlaying = false
-        startSuccessPaticle()
-    }
-    
-    func startSuccessPaticle() {
-        timerSuccess = Timer.scheduledTimer(timeInterval: 7.0, target: self, selector: #selector(stopSuccessPaticle), userInfo: nil, repeats: false)
-        let emitter = SKEmitterNode(fileNamed: "SuccessParticle.sks")
-        emitter?.particlePosition = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
-        emitter?.zPosition = CGPoint(x: 0, y: 0).x
-        emitter?.particleSize = CGSizeMake(30.0, 30.0)
-        emitter?.particleColor = ImageUtil().getSuccessColor()
-        emitter?.name = "Success"
-        self.addChild(emitter!)
-    }
-    
-    @objc func stopSuccessPaticle() {
-        if let fire = self.childNode(withName: "Success") {
-            fire.removeFromParent()
-        }
-        delegateGame?.gameDidEndSuccess(gamescene: self)
-    }
-    
-    /*** FAILURE  */
-    func endFailedGame() {
-        playSoundFailure()
-        gamePlaying = false
-        
-        let action = SKAction.rotate(byAngle: CGFloat(Double.pi), duration:5)
-        if contactCounter == 0 {
-            sprite2.run(SKAction.repeatForever(action))
-            sprite2.run(SKAction.resize(toWidth: 0, duration: 5))
-            startFailurePaticleStone2()
-        } else if contactCounter == 1 {
-            sprite3.run(SKAction.repeatForever(action))
-            sprite3.run(SKAction.resize(toWidth: 0, duration: 5))
-            startFailurePaticleStone3()
-        }
-    }
-    
-    func startFailurePaticleStone2() {
-        timerSuccess = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(stopFailurePaticle), userInfo: nil, repeats: false)
-        let emitter = SKEmitterNode(fileNamed: "FailureParticle.sks")
-        emitter?.particlePosition = CGPoint(x: sprite2.position.x - 10, y: sprite2.position.y - 20)
-        emitter?.zPosition = CGPoint(x: 0, y: 0).x
-        emitter?.particleSize = CGSizeMake(30.0, 30.0)
-        emitter?.particleColor = UIColor.lightGray
-        emitter?.name = "Failure"
-        self.addChild(emitter!)
-    }
-    
-    func startFailurePaticleStone3() {
-        timerSuccess = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(stopFailurePaticle), userInfo: nil, repeats: false)
-        let emitter = SKEmitterNode(fileNamed: "FailureParticle.sks")
-        emitter?.particlePosition = CGPoint(x: sprite3.position.x - 11, y: sprite3.position.y - 8)
-        emitter?.zPosition = CGPoint(x: 0, y: 0).x
-        emitter?.particleSize = CGSizeMake(30.0, 30.0)
-        emitter?.particleColor = UIColor.lightGray
-        emitter?.name = "Failure"
-        self.addChild(emitter!)
-    }
-    
-    @objc func stopFailurePaticle() {
-        if let smoke = self.childNode(withName: "Failure") {
-            smoke.removeFromParent()
-            sprite3.removeFromParent()
-            sprite2.removeFromParent()
-        }
-        delegateGame?.gameDidEndFailed(gamescene: self)
-    }
-    
-    func touchDown(atPoint pos : CGPoint) {
-        
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-    }
-    
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-    }
-    
-    func playSoundUnlockedLevel() {
-        run(SKAction.playSoundFileNamed("zen.m4a", waitForCompletion: false))
-    }
-    
-    func playSoundFailure() {
-        run(SKAction.playSoundFileNamed("shimmer.m4a", waitForCompletion: false))
-    }
-    
     func clearAll() {
         contactCounter = 0
         gamePlaying = true
@@ -395,10 +407,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         sprite3.removeAllActions()
         sprite3.removeAllChildren()
         removeAllChildren()
-    }
-    
-    override func didMove(to view: SKView) {
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
