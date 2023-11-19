@@ -332,11 +332,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     /// TOUCHES END
     
     func playSoundUnlockedLevel() {
-        run(SKAction.playSoundFileNamed("zen.m4a", waitForCompletion: false))
+        run(SKAction.playSoundFileNamed("success.m4a", waitForCompletion: false))
     }
     
     func playSoundFailure() {
-        run(SKAction.playSoundFileNamed("shimmer.m4a", waitForCompletion: false))
+        run(SKAction.playSoundFileNamed("failure.m4a", waitForCompletion: false))
     }
     
     func adjustPositionForStoneOneAndTwo() {
